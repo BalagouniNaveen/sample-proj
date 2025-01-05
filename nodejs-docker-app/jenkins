@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "nodejs-docker-app"
+        DOCKER_REGISTRY = "balagouninaveen"  // Docker Hub username
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                script {
+                    echo "Cloning repository..."
+                    try {
+                        // Ensure correct credentials are used
+                        git credentialsId: 'github-pat-credentials', branch: 'main', url: 'https://github.com/BalagouniNaveen/sample-proj.git'
+                    } catch (Exception e) {
+                        echo "Error cloning the repository: ${e.getMessage()}"
+                        throw e
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker image..."
+                    try {
+                        // Ensure Docker is available before using it
+                        sh 'docker --version'  // This checks if Docker is installed on the Jenkins agent.
+
+                        // Use the Docker pipeline plugin syntax to build the image
+                        docker.build("${DOCKER_REGISTRY}/${DOCKER_IMAGE}")
+                    } catch (Exception e) {
+                        echo "Error building Docker image: ${e.getMessage()}"
+                        throw e
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    echo "Running tests..."
+                    try {
+                        bat 'npm install'
+                        bat 'npm test'
+                    } catch (Exception e) {
+                        echo "Error running tests: ${e.getMessage()}"
+                        throw e
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    echo "Logging in to Docker Hub..."
+                    try {
+                        docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                            echo "Pushing Docker image to Docker Hub..."
+                            docker.image("${DOCKER_REGISTRY}/${DOCKER_IMAGE}").push()
+                        }
+                    } catch (Exception e) {
+                        echo "Error pushing Docker image: ${e.getMessage()}"
+                        throw e
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up Docker images..."
+            // Optional: Clean up Docker images after the build
+            sh 'docker image prune -f'
+        }
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Check the logs for errors."
+        }
+    }
+}
