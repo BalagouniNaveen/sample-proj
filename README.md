@@ -4,22 +4,21 @@ Step 1: Set Up the Node.js Application
 1.1. Create a New Project Folder
 Open Command Prompt or PowerShell and navigate to the location where you want to create your project folder. Then, run the following commands to create and navigate into the folder:
 
-bash
-Copy code
+
 mkdir nodejs-docker-app
 cd nodejs-docker-app
-1.2. Initialize a New Node.js Project
-Run the following command to initialize the project. This will create a default package.json file:
 
-bash
-Copy code
+1.2. Initialize a New Node.js Project
+
+Run the following command to initialize the project. This will create a default package.json file:
 npm init -y
+
 1.3. Install Dependencies (Express)
+
 Install Express, which is a popular framework for building web applications and APIs in Node.js:
 
-bash
-Copy code
 npm install express
+
 This will create the node_modules folder and update your package.json file with express listed as a dependency.
 
 1.4. Create the Application Code
@@ -27,6 +26,7 @@ Create a file named app.js in the project folder. This will contain the logic fo
 
 javascript
 Copy code
+
 // app.js
 
 const express = require('express');
@@ -63,12 +63,14 @@ Copy code
 }
 The start script is defined so that the app can be started using npm start.
 Express is listed as a dependency under "dependencies".
+
+
 Step 3: Create a Dockerfile for Containerization
+
 3.1. Create the Dockerfile
 In your project folder, create a file named Dockerfile (without any file extension) and add the following content:
 
-Dockerfile
-Copy code
+
 # Use an official Node.js runtime as the base image
 FROM node:14
 
@@ -107,19 +109,17 @@ docker build -t nodejs-docker-app .
 This command tells Docker to build an image using the current directory (.) and tag it as nodejs-docker-app.
 
 4.2. Run the Docker Container
-Once the image is built, run the following command to start the container:
 
-bash
-Copy code
+Once the image is built, run the following command to start the container:
 docker run -p 3000:3000 nodejs-docker-app
+
 This command maps port 3000 in the container to port 3000 on your local machine, allowing you to access the application via http://localhost:3000.
 
 Step 5: Test the Application
-Once the Docker container is running, open your browser and navigate to:
 
-arduino
-Copy code
+Once the Docker container is running, open your browser and navigate to:
 http://localhost:3000
+
 You should see the following response:
 
 csharp
@@ -128,15 +128,15 @@ Hello, World! This is a basic Node.js API.
 Final Directory Structure
 Your project directory should look like this:
 
-bash
-Copy code
+
 nodejs-docker-app/
 │
 ├── app.js            # Node.js application file
 ├── package.json      # Dependencies and project configuration
 ├── Dockerfile         # Dockerfile for containerization
 └── node_modules/      # Installed dependencies (generated after running npm install)
-Conclusion
+
+
 You now have a simple Node.js application that:
 
 Has a package.json file with the necessary dependencies (e.g., Express).
